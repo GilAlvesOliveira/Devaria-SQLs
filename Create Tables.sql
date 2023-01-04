@@ -1,42 +1,36 @@
 BEGIN TRANSACTION
 
-CREATE DATABASE DevariaCandies;
-
---COMMIT
---ROLLBACK
-
-BEGIN TRANSACTION
-
 CREATE TABLE Cliente
 (
-	Codigo int Identity (1,1) NOT NULL,
-	CPF CHAR(11) NOT NULL,
-	Nome VARCHAR(40),
-	Email VARCHAR(40),
-	Telefone CHAR(11),
-	Celular CHAR(11),
-	CEP CHAR(8),
-	Logadouro VARCHAR(40),
-	Estado CHAR(2),
-	Cidade VARCHAR(35),
-	CONSTRAINT PK_CodigoCliente PRIMARY KEY (Codigo)
+	Codigo INT IDENTITY (1,1) NOT NULL, --PRIMARY KEY 
+	Nome VARCHAR (50) NOT NULL,
+	CPF CHAR (11) NULL,
+	Celular CHAR (11) NULL,
+	Telefone_Residencial CHAR (10) NULL,
+	Email VARCHAR (50) NULL,
+	Logadouro VARCHAR (50) NULL,
+	CEP CHAR (8) NULL,
+	Cidade VARCHAR (30) NULL,
+	Estado CHAR (2),
+	CONSTRAINT PK_CodigoCliete PRIMARY KEY (Codigo)
 )
+
 
 CREATE TABLE Fidelidade
 (
-	Codigo_Cliente int,
+	Codigo_Cliente INT NOT NULL,
 	Data_Adesao DATETIME NOT NULL,
-	Pontos INT,
+	Pontos INT NULL,
 	CONSTRAINT PK_CodigoClienteFidelidade PRIMARY KEY (Codigo_Cliente),
-	CONSTRAINT FK_CodigoCliente_Fidelidade FOREIGN KEY (Codigo_Cliente) REFERENCES Cliente(Codigo)
+	CONSTRAINT FK_CodigoClienteFidelidade FOREIGN KEY (Codigo_Cliente) REFERENCES Cliente(Codigo)
 )
-
+ 
 
 CREATE TABLE Forma_Pagamento
 (
-	Codigo INT IDENTITY (1,1) NOT NULL,
-	Nome VARCHAR(25),
-	Tipo VARCHAR(25),
+	Codigo INT IDENTITY(1,1) NOT NULL,
+	Nome VARCHAR(25) NOT NULL,
+	Tipo VARCHAR(25) NOT NULL,
 	CONSTRAINT PK_CodigoPagamento PRIMARY KEY (Codigo)
 )
 
@@ -44,8 +38,8 @@ CREATE TABLE Forma_Pagamento
 CREATE TABLE Marca
 (
 	Codigo INT IDENTITY(1,1) NOT NULL,
-	Nome VARCHAR(20),
-	Empresa VARCHAR(30),
+	Nome VARCHAR(25) NULL,
+	Empresa VARCHAR(25) NULL,
 	CONSTRAINT PK_CodigoMarca PRIMARY KEY (Codigo)
 )
 
@@ -53,39 +47,41 @@ CREATE TABLE Marca
 CREATE TABLE Produto
 (
 	Codigo INT IDENTITY(1,1) NOT NULL,
-	Nome VARCHAR(30),
+	Nome VARCHAR (30) NULL,
 	Descricao VARCHAR(MAX),
 	Codigo_Marca INT NOT NULL,
 	CONSTRAINT PK_CodigoProduto PRIMARY KEY (Codigo),
-	CONSTRAINT FK_CodigoMarca FOREIGN KEY (Codigo_Marca) REFERENCES Marca(codigo)
+	CONSTRAINT FK_CodigoMarca FOREIGN KEY (Codigo_Marca) REFERENCES Marca(Codigo)
 )
 
 
 CREATE TABLE Pedido_Venda
 (
 	Codigo INT IDENTITY(1,1) NOT NULL,
-	Valor DECIMAL(6,2),
-	Valor_Imposto DECIMAL(6,2),
-	Data DATETIME NOT NULL,
-	Codigo_Forma_Pagamento INT NOT NULL,
+	Valor DECIMAL(6,2) NULL,
+	Valor_Imposto DECIMAL(6,2) NULL,
+	[Data] DATETIME NOT NULL,
+	Nota_Fiscal INT NOT NULL,
 	Codigo_Cliente INT NOT NULL,
-	CONSTRAINT PK_CodigoVenda PRIMARY KEY (Codigo),
-	CONSTRAINT FK_CodigoFormaPagamento FOREIGN KEY (Codigo_Forma_Pagamento) REFERENCES Forma_Pagamento(Codigo),	
+	Codigo_Forma_Pagamento INT NOT NULL,
+	CONSTRAINT PK_PedidoVenda PRIMARY KEY (Codigo),
+	CONSTRAINT FK_CodigoFormaPagamento FOREIGN KEY (Codigo_Forma_Pagamento) REFERENCES Forma_Pagamento(Codigo),
 	CONSTRAINT FK_CodigoCliente FOREIGN KEY (Codigo_Cliente) REFERENCES Cliente(Codigo)
 )
+
 
 CREATE TABLE Item_Pedido_Venda
 (
 	Codigo INT IDENTITY(1,1) NOT NULL,
-	Valor_Total DECIMAL(6,2),
-	Valor_Imposto DECIMAL(6,2),
-	Valor_Unitario DECIMAL(6,2),
-	Quantidade int,
+	Valor_Total DECIMAL(6,2) NULL,
+	Valor_Imposto DECIMAL(6,2) NULL,
+	Valor_Unitario DECIMAL(6,2) NULL,
+	Quantidade int NULL,
 	Codigo_Produto INT NOT NULL,
 	Codigo_Pedido_Venda INT NOT NULL,
-	CONSTRAINT PK_CodigoPedidoVenda PRIMARY KEY (Codigo),
-	CONSTRAINT FK_CodigoProdutoVenda FOREIGN KEY (Codigo_Produto) REFERENCES Produto(Codigo),
-	CONSTRAINT FK_CodigoVenda FOREIGN KEY (Codigo_Pedido_Venda) REFERENCES Pedido_Venda(Codigo)
+	CONSTRAINT PK_CodigoItemPedidoVenda PRIMARY KEY (Codigo),
+	CONSTRAINT FK_CodigoProduto FOREIGN KEY (Codigo_Produto) REFERENCES Produto (Codigo),
+	CONSTRAINT FK_CodigoPedidoVenda FOREIGN KEY (Codigo_Pedido_Venda) REFERENCES Pedido_Venda (Codigo)
 )
 
 
@@ -106,30 +102,32 @@ CREATE TABLE Distribuidor
 CREATE TABLE Pedido_Compra
 (
 	Codigo INT IDENTITY(1,1) NOT NULL,
-	Data DATETIME NOT NULL,
-	Valor DECIMAL(6,2),
-	Entregue BIT,
+	Valor DECIMAL(6,2) NULL,
+	[Data] DATETIME NOT NULL,
+	Nota_Fiscal INT NOT NULL,
 	Codigo_Distribuidor INT NOT NULL,
-	CONSTRAINT PK_CodigoPedido_Venda PRIMARY KEY (Codigo),
-	CONSTRAINT FK_CodigoDistribuidor FOREIGN KEY (Codigo_Distribuidor) REFERENCES Distribuidor(Codigo)
+	CONSTRAINT PK_CodigoPedidoCompra PRIMARY KEY (Codigo),
+	CONSTRAINT FK_CodigoDistribuidor FOREIGN KEY (Codigo_Distribuidor) REFERENCES Distribuidor (Codigo)
 )
+
 
 CREATE TABLE Item_Pedido_Compra
 (
 	Codigo INT IDENTITY(1,1) NOT NULL,
-	ValorTotal DECIMAL(6,2),
-	ValorUnitario DECIMAL(6,2),
-	Quantidade int,
+	Valor_Unitario DECIMAL(6,2) NULL,
+	Quantidade INT NULL,
+	Valor_Total DECIMAL(6,2) NULL,
 	Codigo_Produto INT NOT NULL,
 	Codigo_Pedido_Compra INT NOT NULL,
-	CONSTRAINT PK_CodigoItemPedidoVenda PRIMARY KEY (Codigo),
-	CONSTRAINT FK_CodigoProdutoCompra FOREIGN KEY (Codigo_Produto) REFERENCES Produto(Codigo),
-	CONSTRAINT FK_CodigoPedidoCompraItem FOREIGN KEY (Codigo_Pedido_Compra) REFERENCES Pedido_Compra(Codigo),
+	CONSTRAINT PK_CodigoItenPedidoCompra PRIMARY KEY (Codigo),
+	CONSTRAINT FK_CodigoProdutoItem FOREIGN KEY (Codigo_Produto) REFERENCES Produto (Codigo),
+	CONSTRAINT FK_CodigoPedidoCompra FOREIGN KEY (Codigo_Pedido_Compra) REFERENCES Pedido_Compra (Codigo)
 )
 
 --COMMIT
 --ROLLBACK
 
+--DROP TABLE 
 
 SELECT * FROM Cliente
 SELECT * FROM Fidelidade
